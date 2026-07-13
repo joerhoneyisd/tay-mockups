@@ -43,12 +43,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    overflow-y: auto;
+    overflow-x: hidden;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease;
+    -webkit-overflow-scrolling: touch;
   }
 
   .slide.active {
@@ -57,26 +58,12 @@
   }
 
   .slide img {
-    max-width: 100vw;
-    max-height: 100vh;
-    width: auto;
+    display: block;
+    width: 100%;
     height: auto;
-    object-fit: contain;
     user-select: none;
     -webkit-user-drag: none;
   }
-
-  /* click zones for prev/next */
-  .click-zone {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 40%;
-    z-index: 5;
-    cursor: pointer;
-  }
-  .click-zone.left { left: 0; }
-  .click-zone.right { right: 0; }
 
   /* arrow buttons */
   .nav-btn {
@@ -192,9 +179,6 @@
 <div class="viewer show-ui" id="viewer">
   <div id="slides"></div>
 
-  <div class="click-zone left" id="zoneLeft"></div>
-  <div class="click-zone right" id="zoneRight"></div>
-
   <button class="nav-btn prev" id="prevBtn" aria-label="Previous slide">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
   </button>
@@ -228,8 +212,6 @@
   const viewer = document.getElementById('viewer');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
-  const zoneLeft = document.getElementById('zoneLeft');
-  const zoneRight = document.getElementById('zoneRight');
   const counter = document.getElementById('counter');
   const progress = document.getElementById('progress');
   const fsBtn = document.getElementById('fsBtn');
@@ -280,7 +262,9 @@
 
     current = index;
 
-    document.querySelectorAll('.slide')[current].classList.add('active');
+    const newSlide = document.querySelectorAll('.slide')[current];
+    newSlide.classList.add('active');
+    newSlide.scrollTop = 0;
     document.querySelectorAll('.dot')[current].classList.add('active');
 
     updateUI();
@@ -307,8 +291,6 @@
   // navigation events
   prevBtn.addEventListener('click', (e) => { e.stopPropagation(); prev(); });
   nextBtn.addEventListener('click', (e) => { e.stopPropagation(); next(); });
-  zoneLeft.addEventListener('click', prev);
-  zoneRight.addEventListener('click', next);
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
